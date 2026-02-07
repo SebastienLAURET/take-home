@@ -25,4 +25,13 @@ class Api::V1::Root < Grape::API
   post :sign do
     run_interaction Crypto::Sign, payload: params
   end
+
+  desc "Verify payload"
+  post :verify do
+    run_interaction(
+      Crypto::Verify,
+      payload: params[:payload].except(:signature),
+      signature: params[:signature]
+    )
+  end
 end
