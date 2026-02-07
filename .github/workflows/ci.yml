@@ -63,6 +63,9 @@ jobs:
       #     - 6379:6379
       #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
+    permissions:
+      contents: write
+
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
@@ -101,3 +104,43 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
+
+      - name: Update coverage badge
+        run: |
+          # Extract coverage percentage from coverage.xml
+          COVERAGE=$(grep -o 'line-rate="[^"]*"' coverage/coverage.xml | head -1 | cut -d'"' -f2)
+          # Use awk for floating point calculation
+          PERCENTAGE=$(echo "$COVERAGE" | awk '{printf "%.0f", $1 * 100}')
+
+          if [ "$PERCENTAGE" -ge 90 ]; then
+            COLOR="brightgreen"
+          elif [ "$PERCENTAGE" -ge 80 ]; then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+
+          BADGE_URL="https://img.shields.io/badge/coverage-${PERCENTAGE}%25-${COLOR}"
+
+          # Git setup
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Determine branch to push to
+          DEST_BRANCH="${{ github.head_ref }}"
+          if [ -z "$DEST_BRANCH" ]; then
+            DEST_BRANCH="${{ github.ref_name }}"
+          fi
+
+          # Fetch and checkout the branch to ensure we are on the correct ref
+          git fetch origin $DEST_BRANCH
+          git checkout -B $DEST_BRANCH origin/$DEST_BRANCH
+
+          # Update README.md using GNU sed
+          sed -i "s|https://img.shields.io/badge/coverage-[^)]*|${BADGE_URL}|" README.md
+
+          if [[ -n $(git status -s) ]]; then
+            git add README.md
+            git commit -m "docs: update coverage badge to ${PERCENTAGE}% [skip ci]"
+            git push origin $DEST_BRANCH
+          fi
