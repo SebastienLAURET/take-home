@@ -208,26 +208,20 @@ docker compose run app bash
 # Console Rails
 docker compose run app bin/rails console
 
+# Reset database
+docker compose run app rails db:drop
+
+# Init database
+docker compose run app rails db:create db:migrate db:seed
+
+# Run tests
+docker compose run app rails db:test:prepare test
+docker compose run app rspec
+
 # Arrêter les services
 docker compose down
 
 # Nettoyer tout (volumes inclus)
-docker compose down -v
+docker compose down -v --remove-orphans
 ```
 
-## 🤝 Contribution
-
-1. Créer une branche depuis `develop`
-2. Faire vos modifications
-3. S'assurer que les tests passent : `bundle exec rspec`
-4. S'assurer que RuboCop passe : `bundle exec rubocop`
-5. Commiter avec un message au format Conventional Commits
-6. Créer une Pull Request
-
-## 📝 License
-
-Ce projet est un challenge technique pour Riot Games.
-
-## 📞 Support
-
-Pour toute question, consultez la documentation dans le dossier `docs/` ou contactez l'équipe de développement.
