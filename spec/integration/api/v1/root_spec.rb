@@ -18,11 +18,22 @@ RSpec.describe 'Api::V1::Root', type: :request do
   end
 
   describe 'POST /api/v1/encrypt' do
-    let(:params) { { username: 'john_doe', password: 'secret123' } }
+    let(:params) do
+      {
+        "name": "John Doe",
+        "age": 30,
+        "contact": {
+          "email": "john@example.com",
+          "phone": "123-456-7890"
+        }
+      }
+    end
+
     let(:expected_payload) do
       {
-        'username' => Base64.encode64('john_doe'.to_json),
-        'password' => Base64.encode64('secret123'.to_json)
+        "name": "IkpvaG4gRG9lIg==\n",
+        "age": "IjMwIg==\n",
+        "contact": "eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJwaG9uZSI6IjEyMy00NTYt\nNzg5MCJ9\n"
       }
     end
 
@@ -35,7 +46,39 @@ RSpec.describe 'Api::V1::Root', type: :request do
 
     it 'returns the encrypted payload using Base64 by default' do
       perform_request
-      expect(JSON.parse(response.body)).to eq(expected_payload)
+      expect(JSON.parse(response.body).deep_symbolize_keys).to eq(expected_payload)
+    end
+  end
+
+  describe 'POST /api/v1/decrypt' do
+    let(:params) do
+      {
+        "name": "IkpvaG4gRG9lIg==\n",
+        "age": "MzA=\n",
+        "contact": "eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJwaG9uZSI6IjEyMy00NTYt\nNzg5MCJ9\n"
+      }
+    end
+    let(:expected_payload) do
+      {
+        "name": "John Doe",
+        "age": 30,
+        "contact": {
+          "email": "john@example.com",
+          "phone": "123-456-7890"
+        }
+      }
+    end
+
+    subject(:perform_request) { post '/api/v1/decrypt', params: params }
+
+    it 'returns a successful status code' do
+      perform_request
+      expect(response).to have_http_status(:created)
+    end
+
+    it 'returns the decrypted payload using Base64 by default' do
+      perform_request
+      expect(JSON.parse(response.body).deep_symbolize_keys).to eq(expected_payload)
     end
   end
 end

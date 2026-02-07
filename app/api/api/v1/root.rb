@@ -15,4 +15,9 @@ class Api::V1::Root < Grape::API
   post :encrypt do
     run_interaction Crypto::Encrypt, payload: params
   end
+
+  desc "Decrypt payload"
+  post :decrypt do
+    run_interaction Crypto::Decrypt, payload: params
+  end
 end
