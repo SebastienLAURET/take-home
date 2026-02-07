@@ -13,12 +13,10 @@ class Crypto::Hmac::Sign < ApplicationInteraction
     private
 
     def signature
-       @signature ||= Base64.encode64(
-            OpenSSL::HMAC.digest(
+       @signature ||= OpenSSL::HMAC.digest(
                 "SHA256",
-                secret_key,
+                secret_key.unpack1("H*"),
                 payload.to_json_c14n
-            )
-       )
+            ).unpack1("H*")
     end
 end
