@@ -20,4 +20,9 @@ class Api::V1::Root < Grape::API
   post :decrypt do
     run_interaction Crypto::Decrypt, payload: params
   end
+
+  desc "Sign payload"
+  post :sign do
+    run_interaction Crypto::Sign, payload: params
+  end
 end

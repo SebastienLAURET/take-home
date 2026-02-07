@@ -101,4 +101,5 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           DATABASE_USERNAME: postgres
           DATABASE_PASSWORD: postgres
+          HMAC_SECRET_KEY: 2ccab5045dd3d6eccc61c41155e760f0fb6a98a6e52d35e127026335fb3871c658cf3df42237e000af4f18abb2e5c33481e66d08f1a3b6f86d1b2c88c8b34a77
         run: rspec

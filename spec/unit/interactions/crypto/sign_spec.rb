@@ -2,19 +2,19 @@
 
 require 'rails_helper'
 
-RSpec.describe Crypto::Decrypt, type: :interaction do
+RSpec.describe Crypto::Sign, type: :interaction do
     describe "#execute" do
         subject(:outcome) { described_class.run(inputs) }
 
         let(:inputs) { { payload: payload, algorithm: algorithm } }
-        let(:payload) { { "username" => "encrypted", "password" => "encrypted" } }
-        let(:decrypted_payload) { { "username" => "john_doe", "password" => "secret123" } }
-        let(:algorithm) { :base64 }
+        let(:payload) { { "username" => "john_doe", "password" => "secret123" } }
+        let(:signed_payload) { { "signature" => "mock_signature" } }
+        let(:algorithm) { :hmac }
 
 
-        context "when using base64 algorithm" do
+        context "when using hmac algorithm" do
             before do
-                allow_any_instance_of(Crypto::Base64::Decrypt).to receive(:execute).and_return(decrypted_payload)
+                allow_any_instance_of(Crypto::Hmac::Sign).to receive(:execute).and_return("mock_signature")
             end
 
 
@@ -22,28 +22,24 @@ RSpec.describe Crypto::Decrypt, type: :interaction do
                 expect(outcome).to be_valid
             end
 
-            it "calls Crypto::Base64::Decrypt interaction" do
-                expect(Crypto::Base64::Decrypt).to receive(:run).with(hash_including(payload: payload.stringify_keys)).and_call_original
+            it "calls Crypto::Hmac::Sign interaction" do
+                expect(Crypto::Hmac::Sign).to receive(:run).with(hash_including(payload: payload.stringify_keys)).and_call_original
 
                 outcome
             end
 
-            it "returns decrypted payload" do
+            it "returns signed payload" do
                 result = outcome.result
 
-                expect(result).to eq(decrypted_payload)
+                expect(result.stringify_keys).to eq(signed_payload.stringify_keys)
             end
         end
 
         context "when payload is empty" do
-            let(:payload) { {} }
+            let(:payload) { nil }
 
             it "is valid" do
-                expect(outcome).to be_valid
-            end
-
-            it "returns an empty hash" do
-                expect(outcome.result).to eq({})
+                expect(outcome).to be_invalid_with(:payload, :missing)
             end
         end
 
@@ -51,7 +47,7 @@ RSpec.describe Crypto::Decrypt, type: :interaction do
         let(:inputs) { { payload: payload } }
 
             before do
-                allow_any_instance_of(Crypto::Base64::Decrypt).to receive(:execute).and_return(decrypted_payload)
+                allow_any_instance_of(Crypto::Hmac::Sign).to receive(:execute).and_return("mock_signature")
             end
 
             it "is valid" do
@@ -59,7 +55,7 @@ RSpec.describe Crypto::Decrypt, type: :interaction do
             end
 
             it "uses base64 as default algorithm" do
-                expect(Crypto::Base64::Decrypt).to(
+                expect(Crypto::Hmac::Sign).to(
                     receive(:run)
                         .with(hash_including(payload: payload.stringify_keys))
                         .and_call_original
@@ -68,10 +64,10 @@ RSpec.describe Crypto::Decrypt, type: :interaction do
                 outcome
             end
 
-            it "returns decrypted payload with default algorithm" do
+            it "returns signed payload with default algorithm" do
                 result = outcome.result
 
-                expect(result).to eq(decrypted_payload)
+                expect(result.stringify_keys).to eq(signed_payload.stringify_keys)
             end
         end
 
