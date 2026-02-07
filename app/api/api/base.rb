@@ -7,11 +7,6 @@ class Api::Base < Grape::API
     error!({ error: e.message }, 404)
   end
 
-  rescue_from :all do |e|
-    Rails.logger.error "#{e.message}\n\n#{e.backtrace.join("\n")}"
-    error!({ error: "Internal Server Error" }, 500)
-  end
-
   mount Api::V1::Root
 
   add_swagger_documentation(
