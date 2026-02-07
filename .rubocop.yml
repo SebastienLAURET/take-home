@@ -2,7 +2,25 @@
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 # Overwrite or add rules to create your own house style
-#
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Enforce frozen_string_literal comment at the top of each file
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+# Enforce compact style for classes/modules (use :: notation like Class::Name)
+# Exception: config/application.rb uses nested style
+Style/ClassAndModuleChildren:
+  Enabled: true
+  EnforcedStyle: compact
+  Exclude:
+    - 'config/application.rb'
+
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
