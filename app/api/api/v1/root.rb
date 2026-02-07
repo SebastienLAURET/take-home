@@ -10,4 +10,9 @@ class Api::V1::Root < Grape::API
   get :status do
     run_interaction Status::Get
   end
+
+  desc "Encrypt payload"
+  post :encrypt do
+    run_interaction Crypto::Encrypt, payload: params
+  end
 end
