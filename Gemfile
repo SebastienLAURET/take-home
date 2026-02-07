@@ -55,7 +55,11 @@ group :development, :test do
 
   # Git hooks manager for pre-commit checks
   gem "overcommit", require: false
+
+  gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
 end
+
 
 gem "dotenv-rails"
 gem "grape", "~> 3.1"
