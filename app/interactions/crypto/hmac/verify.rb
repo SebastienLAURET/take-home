@@ -3,15 +3,23 @@
 require "digest"
 
 class Crypto::Hmac::Verify < ApplicationInteraction
-  hash :payload, strip: false, required: true
+  hash :data, strip: false, required: true
   string :signature, required: true
   string :secret_key, default: ENV.fetch("HMAC_SECRET_KEY")
 
+  validate :check_signature
+
   def execute
-    signature_valid?
+    true
   end
 
   private
+
+  def check_signature
+    return if signature_valid?
+
+    errors.add(:signature, :invalid)
+  end
 
   def signature_valid?
     ActiveSupport::SecurityUtils.secure_compare(
@@ -24,7 +32,7 @@ class Crypto::Hmac::Verify < ApplicationInteraction
       OpenSSL::HMAC.digest(
         "SHA256",
         secret_key.unpack1("H*"),
-        payload.to_json_c14n
+        data.to_json_c14n
       )
   end
 end

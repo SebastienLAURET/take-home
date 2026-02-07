@@ -51,7 +51,7 @@ RSpec.describe 'Api::V1::Root', type: :request do
 
       it 'returns an unprocessable entity status code' do
         perform_request
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'returns the error messages' do

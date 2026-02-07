@@ -7,8 +7,8 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
   describe "#execute" do
     subject(:outcome) { described_class.run(inputs) }
 
-    let(:inputs) { { payload: payload, signature: signature, secret_key: secret_key } }
-    let(:payload) { { "username" => "john_doe", "password" => "secret123" } }
+    let(:inputs) { { data: data, signature: signature, secret_key: secret_key } }
+    let(:data) { { "username" => "john_doe", "password" => "secret123" } }
     let(:secret_key) { "95eb51cbac2ee5e96b58d8dc79cde3bd6a5798c3a1673f7b2102679cfb12b023" }
     let(:signature) { "29ca9635908c3a75f3bacaab48706c20c9eb8684882d3b87318279daedbf8216" }
 
@@ -25,23 +25,23 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
     context "when signature does not match" do
       let(:signature) { "InvalidSignature" }
 
-      it "is valid interaction but returns false" do
-        expect(outcome).to be_valid
-        expect(outcome.result).to be false
+      it "is invalid" do
+        expect(outcome).to be_invalid
+        expect(outcome.errors[:signature]).to include("is invalid")
       end
     end
 
-    context "when payload is not provided" do
+    context "when data is not provided" do
       let(:inputs) { { signature: signature } }
 
       it "is invalid" do
         expect(outcome).to be_invalid
-        expect(outcome.errors[:payload]).to include("is required")
+        expect(outcome.errors[:data]).to include("is required")
       end
     end
 
     context "when signature is not provided" do
-      let(:inputs) { { payload: payload } }
+      let(:inputs) { { data: data } }
 
       it "is invalid" do
         expect(outcome).to be_invalid
