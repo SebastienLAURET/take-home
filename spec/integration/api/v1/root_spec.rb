@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'V1::Root', type: :request do
+RSpec.describe 'Api::V1::Root', type: :request do
   describe 'GET /api/v1/status' do
     subject(:perform_request) { get '/api/v1/status' }
 

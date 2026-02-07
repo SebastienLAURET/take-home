@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BaseApi < Grape::API
+class Api::Base < Grape::API
   format :json
 
   rescue_from ActiveRecord::RecordNotFound do |e|
@@ -12,7 +12,7 @@ class BaseApi < Grape::API
     error!({ error: "Internal Server Error" }, 500)
   end
 
-  mount V1::Root
+  mount Api::V1::Root
 
   add_swagger_documentation(
     api_version: "v1",
