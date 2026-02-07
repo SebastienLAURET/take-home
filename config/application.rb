@@ -2,6 +2,9 @@ require_relative "boot"
 
 require "rails/all"
 
+# Ruby 3.4+ requires explicit require for OpenStruct
+# This is needed for grape-swagger-rails compatibility
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
