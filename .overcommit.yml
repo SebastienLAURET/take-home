@@ -1,0 +1,72 @@
+# Configuration for Overcommit Git hooks
+# See https://github.com/sds/overcommit for documentation
+
+# Verify signatures for overcommit configuration
+verify_signatures: false
+
+# Pre-commit hooks - run before each commit
+PreCommit:
+  # Run RuboCop to check code style
+  RuboCop:
+    enabled: true
+    on_warn: fail
+    command: ['bundle', 'exec', 'rubocop']
+    flags: ['--format', 'simple', '--force-exclusion']
+    description: 'Checking Ruby code style with RuboCop'
+
+  # Run RSpec tests
+  RSpec:
+    enabled: true
+    on_warn: fail
+    command: ['bundle', 'exec', 'rspec']
+    description: 'Running RSpec tests'
+
+  # Check for trailing whitespace
+  TrailingWhitespace:
+    enabled: true
+    exclude:
+      - '**/db/structure.sql'
+      - '**/db/schema.rb'
+
+  # Prevent commits to main/master branches
+  ForbiddenBranches:
+    enabled: true
+    branch_patterns:
+      - 'main'
+      - 'master'
+      - 'develop'
+
+# Commit message hooks - validate commit message format
+CommitMsg:
+  # Ensure commit messages follow Conventional Commits format
+  # Format: type(scope): subject
+  # Example: feat(api): add user authentication
+  TextWidth:
+    enabled: true
+    min_subject_width: 10
+    max_subject_width: 72
+    description: 'Checking commit message length'
+
+  # Custom hook to validate Conventional Commits format
+  CapitalizedSubject:
+    enabled: false  # Disabled because conventional commits use lowercase
+
+  # Ensure commit message has proper format
+  # This will be handled by a custom script
+  MessageFormat:
+    enabled: true
+    pattern: '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .+'
+    description: 'Commit message must follow Conventional Commits format'
+    sample_message: 'feat(api): add user authentication'
+
+# Post-checkout hooks
+PostCheckout:
+  BundleInstall:
+    enabled: true
+    description: 'Installing bundle dependencies'
+
+# Post-merge hooks
+PostMerge:
+  BundleInstall:
+    enabled: true
+    description: 'Installing bundle dependencies'
