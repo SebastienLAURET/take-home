@@ -1,0 +1,52 @@
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: .docker/app/Dockerfile
+  environment:
+    RAILS_ENV: ${RAILS_ENV:-development}
+    DATABASE_HOST: db
+    DATABASE_USERNAME: postgres
+    DATABASE_PASSWORD: password
+    BUNDLE_PATH: /usr/local/bundle
+    PATH: /app/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  volumes:
+    - .:/app
+    - bundle_data:/usr/local/bundle
+  networks:
+    - app_network
+
+services:
+  app:
+    <<: *app-base
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - setup
+
+  setup:
+    <<: *app-base
+    command: rails db:prepare
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: starter_rails_api_development
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  bundle_data:
+
+
+networks:
+  app_network:
