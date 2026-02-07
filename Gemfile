@@ -64,3 +64,5 @@ gem "grape-swagger", "~> 2.1"
 gem "rack-cors"
 
 gem "active_interaction", "~> 5.5"
+
+gem "json-canonicalization", "~> 1.0"

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe Crypto::Base64::Decrypt, type: :interaction do
   describe "#execute" do
     subject(:outcome) { described_class.run(inputs) }

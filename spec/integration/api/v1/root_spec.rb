@@ -81,4 +81,26 @@ RSpec.describe 'Api::V1::Root', type: :request do
       expect(JSON.parse(response.body).deep_symbolize_keys).to eq(expected_payload)
     end
   end
+
+  describe 'POST /api/v1/sign' do
+    let(:params) { { username: 'john_doe', password: 'secret123' } }
+    let(:secret) { "secret" }
+    let(:expected_payload) do
+      {
+        'signature' => "/Qkp2DE+6BJK246tPZnv1sPrY+tDsmHweRbQ4t2lm6k=\n"
+      }
+    end
+
+    subject(:perform_request) { post '/api/v1/sign', params: params }
+
+    it 'returns a successful status code' do
+      perform_request
+      expect(response).to have_http_status(:created)
+    end
+
+    it 'returns the signed payload using HMAC-SHA256/Base64 by default' do
+      perform_request
+      expect(JSON.parse(response.body)).to eq(expected_payload)
+    end
+  end
 end
