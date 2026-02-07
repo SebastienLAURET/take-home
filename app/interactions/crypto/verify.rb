@@ -6,22 +6,20 @@ class Crypto::Verify < ApplicationInteraction
     hmac: Crypto::Hmac::Verify
   }
 
-  hash :payload, strip: false, required: true
+  hash :data, strip: false, required: true
   string :signature, required: true
   symbol :algorithm, default: :hmac
 
   validates_inclusion_of :algorithm, in: CRYPTO_VERIFY_ALGORITHMS.keys
 
   def execute
-    {
-      valid: signature_valid?
-    }
+    check_signature
   end
 
   private
 
-  def signature_valid?
-    @signature_valid ||= compose(verify_interaction, payload: payload, signature: signature)
+  def check_signature
+    @check_signature ||= compose(verify_interaction, data: data, signature: signature)
   end
 
   def verify_interaction

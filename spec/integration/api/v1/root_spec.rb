@@ -110,7 +110,7 @@ RSpec.describe 'Api::V1::Root', type: :request do
 
     let(:params) do
       {
-        payload: payload,
+        data: payload,
         signature: signature
       }
     end
@@ -119,8 +119,8 @@ RSpec.describe 'Api::V1::Root', type: :request do
 
     it 'calls verify interaction and returns success' do
       perform_request
-      expect(response).to have_http_status(:created)
-      expect(JSON.parse(response.body)).to eq({ "valid" => true })
+      expect(response).to have_http_status(:no_content)
+      expect(response.body).to be_empty
     end
   end
 end

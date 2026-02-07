@@ -13,25 +13,25 @@ class Api::V1::Root < Grape::API
 
   desc "Encrypt payload"
   post :encrypt do
-    run_interaction Crypto::Encrypt, payload: params
+    run_interaction Crypto::Encrypt, { payload: params }
   end
 
   desc "Decrypt payload"
   post :decrypt do
-    run_interaction Crypto::Decrypt, payload: params
+    run_interaction Crypto::Decrypt, { payload: params }
   end
 
   desc "Sign payload"
   post :sign do
-    run_interaction Crypto::Sign, payload: params
+    run_interaction Crypto::Sign, { payload: params }
   end
 
   desc "Verify payload"
   post :verify do
     run_interaction(
       Crypto::Verify,
-      payload: params[:payload].except(:signature),
-      signature: params[:signature]
+      params.symbolize_keys.slice(:data, :signature),
+      success_status: 204
     )
   end
 end

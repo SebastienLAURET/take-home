@@ -6,9 +6,9 @@ RSpec.describe Crypto::Verify, type: :interaction do
   describe "#execute" do
     subject(:outcome) { described_class.run(inputs) }
 
-    let(:inputs) { { payload: payload, signature: signature, algorithm: algorithm } }
-    let(:payload) { { "username" => "john_doe" } }
-    let(:signature) { "ValidSignature" }
+    let(:inputs) { { data: data, signature: signature, algorithm: algorithm } }
+    let(:data) { { "message" => "Hello World", "timestamp" => 1616161616 } }
+    let(:signature) { "a7176bc594b111f173a34729c7ce0c431210498ed8f6bbc4eef3a5ca7a7b995d" }
     let(:algorithm) { :hmac }
 
     context "when using hmac algorithm" do
@@ -23,7 +23,7 @@ RSpec.describe Crypto::Verify, type: :interaction do
       it "calls Crypto::Hmac::Verify interaction" do
         expect(Crypto::Hmac::Verify).to receive(:run).with(
           {
-            payload: payload,
+            data: data,
             signature: signature
           }
         ).and_call_original
@@ -31,31 +31,33 @@ RSpec.describe Crypto::Verify, type: :interaction do
       end
 
       it "returns valid: true" do
-        expect(outcome.result).to eq({ valid: true })
+        expect(outcome.result).to eq(true)
       end
     end
 
     context "when signature is invalid" do
+       let(:signature) { "afzf7176bc594b111f173a34729c7ce0c431210498ed8f6bbc4eef3a5ca7a7b995d" }
+
        before do
          allow_any_instance_of(Crypto::Hmac::Verify).to receive(:execute).and_return(false)
        end
 
        it "returns valid: false" do
-         expect(outcome.result).to eq({ valid: false })
+         expect(outcome).to be_invalid_with(:signature, :invalid)
        end
     end
 
-    context "when payload is missing" do
+    context "when data is missing" do
       let(:inputs) { { signature: signature } }
 
       it "is invalid" do
         expect(outcome).to be_invalid
-        expect(outcome.errors[:payload]).to include("is required")
+        expect(outcome.errors[:data]).to include("is required")
       end
     end
 
     context "when signature is missing" do
-      let(:inputs) { { payload: payload } }
+      let(:inputs) { { data: data } }
 
       it "is invalid" do
         expect(outcome).to be_invalid
@@ -64,7 +66,7 @@ RSpec.describe Crypto::Verify, type: :interaction do
     end
 
     context "when algorithm is not provided" do
-      let(:inputs) { { payload: payload, signature: signature } }
+      let(:inputs) { { data: data, signature: signature } }
 
       before do
         allow_any_instance_of(Crypto::Hmac::Verify).to receive(:execute).and_return(true)
