@@ -15,7 +15,6 @@ RSpec.describe Crypto::Encrypt, type: :interaction do
                 allow_any_instance_of(Crypto::Base64::Encrypt).to receive(:execute).and_return(encrypted_payload)
             end
 
-
             it "is valid" do
                 expect(outcome).to be_valid
             end

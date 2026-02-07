@@ -87,7 +87,7 @@ RSpec.describe 'Api::V1::Root', type: :request do
     let(:secret) { "secret" }
     let(:expected_payload) do
       {
-        'signature' => "/Qkp2DE+6BJK246tPZnv1sPrY+tDsmHweRbQ4t2lm6k=\n"
+        'signature' => "0194efdabbb238ae3394f5ff14fb7f0c8a4e8deb03990ea572c4aa59be9fd60e"
       }
     end
 
@@ -101,6 +101,26 @@ RSpec.describe 'Api::V1::Root', type: :request do
     it 'returns the signed payload using HMAC-SHA256/Base64 by default' do
       perform_request
       expect(JSON.parse(response.body)).to eq(expected_payload)
+    end
+  end
+
+  describe 'POST /api/v1/verify' do
+    let(:payload) { { username: 'john_doe', password: 'secret123' } }
+    let(:signature) { "0194efdabbb238ae3394f5ff14fb7f0c8a4e8deb03990ea572c4aa59be9fd60e" }
+
+    let(:params) do
+      {
+        data: payload,
+        signature: signature
+      }
+    end
+
+    subject(:perform_request) { post '/api/v1/verify', params: params }
+
+    it 'calls verify interaction and returns success' do
+      perform_request
+      expect(response).to have_http_status(:no_content)
+      expect(response.body).to be_empty
     end
   end
 end

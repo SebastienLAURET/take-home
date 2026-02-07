@@ -7,15 +7,9 @@ RSpec.describe Crypto::Hmac::Sign, type: :interaction do
   describe "#execute" do
     subject(:outcome) { described_class.run(inputs) }
 
-    let(:inputs) { { payload: payload } }
+    let(:inputs) { { payload: payload, secret_key: secret_key } }
     let(:payload) { { "username" => "john_doe", "password" => "secret123" } }
-    let(:secret_key) { "secret" }
-    let(:signed_payload) { "+/Qkp2DE+6BJK246tPZnv1sPrY+tDsmHweRbQ4t2lm6k=" }
-    before do
-      allow(ENV).to receive(:fetch).with("HMAC_SECRET_KEY").and_return(secret_key)
-      allow(OpenSSL::HMAC).to receive(:digest).and_return("Signature")
-      allow(Base64).to receive(:encode64).and_return("Base64EncodedSignature")
-    end
+    let(:secret_key) { "95eb51cbac2ee5e96b58d8dc79cde3bd6a5798c3a1673f7b2102679cfb12b023" }
 
     context "when inputs are valid" do
       it "is valid" do
@@ -23,7 +17,7 @@ RSpec.describe Crypto::Hmac::Sign, type: :interaction do
       end
 
       it "returns a hash with SHA256 Base64 encoded values" do
-        expect(outcome.result).to eq("Base64EncodedSignature")
+        expect(outcome.result).to eq("29ca9635908c3a75f3bacaab48706c20c9eb8684882d3b87318279daedbf8216")
       end
     end
 
