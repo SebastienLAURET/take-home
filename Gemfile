@@ -52,6 +52,9 @@ group :development, :test do
 
   gem "rspec-rails", "~> 7.1"
   gem "factory_bot_rails"
+
+  # Git hooks manager for pre-commit checks
+  gem "overcommit", require: false
 end
 
 gem "dotenv-rails"
