@@ -36,6 +36,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
       - name: Build Docker image (using cache)
         uses: docker/build-push-action@v5
         with:
@@ -44,7 +50,9 @@ jobs:
           push: false
           load: true
           tags: app:test
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:develop
+          cache-from: |
+            type=registry,ref=ghcr.io/${{ github.repository }}:develop
+            type=registry,ref=${{ steps.meta.outputs.tags }}
 
       - name: Prepare Database
         run: |
