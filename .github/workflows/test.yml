@@ -20,38 +20,51 @@ jobs:
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
-
       - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-
-      - name: Update Bundler
-        run: gem update --system && gem install bundler
-
-      - name: Install dependencies
-        run: bundle install
-
-      - name: Initialize database
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          DATABASE_USERNAME: postgres
-          DATABASE_PASSWORD: postgres
-        run: bin/rails db:test:prepare test
+        uses: actions/checkout@v4
 
 
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          DATABASE_USERNAME: postgres
-          DATABASE_PASSWORD: postgres
-          HMAC_SECRET_KEY: 2ccab5045dd3d6eccc61c41155e760f0fb6a98a6e52d35e127026335fb3871c658cf3df42237e000af4f18abb2e5c33481e66d08f1a3b6f86d1b2c88c8b34a77
-        run: bundle exec rspec
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image (using cache)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .docker/app/Dockerfile
+          push: false
+          load: true
+          tags: app:test
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:develop
+
+      - name: Prepare Database
+        run: |
+          docker run --rm \
+            --network host \
+            -e RAILS_ENV=test \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db \
+            -e DATABASE_USERNAME=postgres \
+            -e DATABASE_PASSWORD=postgres \
+            app:test bin/rails db:test:prepare
+
+      - name: Run Tests
+        run: |
+          docker run --rm \
+            --network host \
+            -e RAILS_ENV=test \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db \
+            -e DATABASE_USERNAME=postgres \
+            -e DATABASE_PASSWORD=postgres \
+            -e HMAC_SECRET_KEY=2ccab5045dd3d6eccc61c41155e760f0fb6a98a6e52d35e127026335fb3871c658cf3df42237e000af4f18abb2e5c33481e66d08f1a3b6f86d1b2c88c8b34a77 \
+            -v ${{ github.workspace }}/coverage:/app/coverage \
+            app:test bundle exec rspec
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
