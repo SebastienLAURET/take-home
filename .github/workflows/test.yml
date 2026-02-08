@@ -1,0 +1,126 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+
+      - name: Build Docker image (using cache)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .docker/app/Dockerfile
+          push: false
+          load: true
+          tags: app:test
+          cache-from: |
+            type=registry,ref=ghcr.io/${{ github.repository }}:develop
+            type=registry,ref=${{ steps.meta.outputs.tags }}
+
+      - name: Prepare Database
+        run: |
+          docker run --rm \
+            --network host \
+            -e RAILS_ENV=test \
+            -e CI=true \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db \
+            -e DATABASE_USERNAME=postgres \
+            -e DATABASE_PASSWORD=postgres \
+            app:test bin/rails db:test:prepare
+
+      - name: Run Tests
+        run: |
+          docker run --rm \
+            --network host \
+            -e RAILS_ENV=test \
+            -e CI=true \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db \
+            -e DATABASE_USERNAME=postgres \
+            -e DATABASE_PASSWORD=postgres \
+            -e HMAC_SECRET_KEY=2ccab5045dd3d6eccc61c41155e760f0fb6a98a6e52d35e127026335fb3871c658cf3df42237e000af4f18abb2e5c33481e66d08f1a3b6f86d1b2c88c8b34a77 \
+            -v ${{ github.workspace }}/coverage:/app/coverage \
+            app:test bundle exec rspec
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Update coverage badge
+        run: |
+          # Extract coverage percentage from coverage.xml
+          COVERAGE=$(grep -o 'line-rate="[^"]*"' coverage/coverage.xml | head -1 | cut -d'"' -f2)
+          # Use awk for floating point calculation
+          PERCENTAGE=$(echo "$COVERAGE" | awk '{printf "%.0f", $1 * 100}')
+
+          if [ "$PERCENTAGE" -ge 90 ]; then
+            COLOR="brightgreen"
+          elif [ "$PERCENTAGE" -ge 80 ]; then
+            COLOR="yellow"
+          else
+            COLOR="red"
+          fi
+
+          BADGE_URL="https://img.shields.io/badge/coverage-${PERCENTAGE}%25-${COLOR}"
+
+          # Git setup
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Determine branch to push to
+          DEST_BRANCH="${{ github.head_ref }}"
+          if [ -z "$DEST_BRANCH" ]; then
+            DEST_BRANCH="${{ github.ref_name }}"
+          fi
+
+          # Fetch and checkout the branch to ensure we are on the correct ref
+          git fetch origin $DEST_BRANCH
+          git checkout -B $DEST_BRANCH origin/$DEST_BRANCH
+
+          # Update README.md using GNU sed
+          sed -i "s|https://img.shields.io/badge/coverage-[^)]*|${BADGE_URL}|" README.md
+
+          if [[ -n $(git status -s) ]]; then
+            git add README.md
+            git commit -m "docs: update coverage badge to ${PERCENTAGE}% [skip ci]"
+            git push origin $DEST_BRANCH
+          fi
