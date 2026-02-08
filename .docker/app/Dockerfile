@@ -23,6 +23,10 @@ RUN gem update --system && gem update bundler
 
 WORKDIR $APP_PATH
 
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+
 # Copier le script d'entrypoint avant le reste
 COPY .docker/app/entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
