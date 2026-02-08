@@ -1,5 +1,7 @@
 # Take-Home Technical Challenge - Rails API
 
+![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)
+
 API REST construite avec Ruby on Rails et Grape pour gérer des opérations de chiffrement, déchiffrement, signature et vérification.
 
 ## 📋 Prérequis
