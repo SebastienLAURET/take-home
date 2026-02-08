@@ -1,5 +1,7 @@
 # Take-Home Technical Challenge - Rails API
 
+![Coverage](https://img.shields.io/badge/coverage-unknown-gray)
+
 API REST construite avec Ruby on Rails et Grape pour gérer des opérations de chiffrement, déchiffrement, signature et vérification.
 
 ## 📋 Prérequis
@@ -14,7 +16,7 @@ API REST construite avec Ruby on Rails et Grape pour gérer des opérations de c
 
 ```bash
 # Cloner le repository
-git clone <repository-url>
+git clone git@github.com:SebastienLAURET/take-home.git
 cd take-home
 
 # Copier le fichier d'environnement

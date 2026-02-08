@@ -1,0 +1,153 @@
+{
+  "info": {
+    "_postman_id": "69818bc3-244e-4cc6-a41b-8697d914c20b",
+    "name": "Take-Home Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - encrypt",
+      "id": "1aa37f25-a71d-47d3-8fc7-85b6879aa42f",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"age\": 30,\n  \"contact\": {\n    \"email\": \"john@example.com\",\n    \"phone\": \"123-456-7890\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/encrypt",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "encrypt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - sign",
+      "id": "17639889-b7a9-421f-92c5-83f55ec17060",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\n      \"timestamp\": 16216161616,\n\"message\": \"Hello World\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/sign",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "sign"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - verify",
+      "id": "cc5a71e7-a3ab-430e-bdaa-0e9548b9382f",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"signature\": \"571d8cc1679b92b1e359e263aed1499c040353100a9701b9b7cc904f506701ad\",\n  \"data\": {\n    \"message\": \"Hello World\",\n    \"timestamp\": 1616161616\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/verify",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "verify"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - decrypt",
+      "id": "4d198c35-262c-4d2c-bfe4-344a20dd11b2",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"IkpvaG4gRG9lIg==\\n\",\n    \"age\": \"MzA=\\n\",\n    \"contact\": \"eyJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJwaG9uZSI6IjEyMy00NTYt\\nNzg5MCJ9\\n\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/decrypt",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "decrypt"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "status",
+      "id": "bb236b4a-a290-441e-a104-9c04843a561c",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/v1/status",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "id": "1ccd023a-8813-4335-915d-717966e6a93c",
+      "key": "url",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
