@@ -5,7 +5,7 @@ require "digest"
 class Crypto::Hmac::Verify < ApplicationInteraction
   hash :data, strip: false, required: true
   string :signature, required: true
-  string :secret_key, default: ENV.fetch("HMAC_SECRET_KEY")
+  string :secret_key, default: -> { ENV.fetch("HMAC_SECRET_KEY") }
 
   validate :check_signature
 
@@ -31,7 +31,7 @@ class Crypto::Hmac::Verify < ApplicationInteraction
   def calculated_signature
       OpenSSL::HMAC.digest(
         "SHA256",
-        secret_key.unpack1("H*"),
+        [ secret_key ].pack("H*"),
         data.to_json_c14n
       )
   end

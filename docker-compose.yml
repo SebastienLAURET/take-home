@@ -10,6 +10,7 @@ x-app-base: &app-base
     BUNDLE_PATH: /usr/local/bundle
     #PATH: /app/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     HMAC_SECRET_KEY: 1c860ae1936688e21df3c3cf8907fed2db158118f390a2a1d8714e9ff504f950
+    #HMAC_SECRET_KEY: 2ccab5045dd3d6eccc61c41155e760f0fb6a98a6e52d35e127026335fb3871c658cf3df42237e000af4f18abb2e5c33481e66d08f1a3b6f86d1b2c88c8b34a77
   volumes:
     - .:/app
     - bundle_data:/usr/local/bundle

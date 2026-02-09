@@ -9,12 +9,31 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
 
     let(:inputs) { { data: data, signature: signature, secret_key: secret_key } }
     let(:data) { { "username" => "john_doe", "password" => "secret123" } }
-    let(:secret_key) { "95eb51cbac2ee5e96b58d8dc79cde3bd6a5798c3a1673f7b2102679cfb12b023" }
-    let(:signature) { "29ca9635908c3a75f3bacaab48706c20c9eb8684882d3b87318279daedbf8216" }
+    let(:secret_key) { "SecretKey" }
+    let(:signature) { "signature" }
+    let(:calculated_signature) { "calculated_signature" }
+
+
 
     context "when inputs are valid and signature matches" do
+      before do
+        allow(OpenSSL::HMAC).to receive(:digest).and_return(calculated_signature)
+        allow(ActiveSupport::SecurityUtils).to receive(:secure_compare).and_return(true)
+        allow_any_instance_of(Array).to receive(:pack).and_return("bytes_value")
+      end
+
       it "is valid" do
         expect(outcome).to be_valid
+      end
+
+      it "calls OpenSSL::HMAC#digest" do
+        expect(OpenSSL::HMAC).to receive(:digest).with("SHA256", "bytes_value", data.to_json_c14n)
+        outcome
+      end
+
+      it "calls ActiveSupport::SecurityUtils#secure_compare" do
+        expect(ActiveSupport::SecurityUtils).to receive(:secure_compare).with("bytes_value", calculated_signature)
+        outcome
       end
 
       it "returns true" do
