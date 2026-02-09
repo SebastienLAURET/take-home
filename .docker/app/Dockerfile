@@ -23,6 +23,9 @@ RUN gem update --system && gem update bundler
 
 WORKDIR $APP_PATH
 
+# Ajout du répertoire bin au PATH pour utiliser les binstubs automatiquement
+ENV PATH="$APP_PATH/bin:${PATH}"
+
 # Copier le script d'entrypoint avant le reste
 COPY .docker/app/entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh

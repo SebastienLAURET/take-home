@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Crypto::Base64::Decrypt, type: :interaction do
   describe "#execute" do
@@ -15,7 +15,6 @@ RSpec.describe Crypto::Base64::Decrypt, type: :interaction do
       allow(JSON).to receive(:parse).and_return("decrypted_value")
     end
 
-
     context "when inputs are valid" do
       it "is valid" do
         expect(outcome).to be_valid
@@ -28,13 +27,12 @@ RSpec.describe Crypto::Base64::Decrypt, type: :interaction do
       end
 
       it "calls Base64.decode64 for each value in the payload" do
-        payload.each do |key, value|
+        payload.each_value do |value|
           expect(Base64).to receive(:decode64).with(value)
         end
 
         outcome
       end
-
 
       it "calls JSON#parse" do
         expect(JSON).to receive(:parse).with("\"json_decrypted_value\"")
@@ -43,17 +41,16 @@ RSpec.describe Crypto::Base64::Decrypt, type: :interaction do
     end
 
     context "when inputs contain invalid base64/json" do
-        before do
-            allow(Base64).to receive(:decode64).and_return("invalid json")
-            allow(JSON).to receive(:parse).and_call_original
-        end
+      before do
+        allow(Base64).to receive(:decode64).and_return("invalid json")
+        allow(JSON).to receive(:parse).and_call_original
+      end
 
-        it "is invalid" do
-             expect(outcome).to be_invalid
-             expect(outcome.errors[:base]).to include("Invalid payload")
-        end
+      it "is invalid" do
+        expect(outcome).not_to be_valid
+        expect(outcome.errors[:base]).to include("Invalid payload")
+      end
     end
-
 
     context "when payload is not provided" do
       let(:inputs) { {} }

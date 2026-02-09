@@ -12,7 +12,6 @@ RSpec.describe Crypto::Base64::Encrypt, type: :interaction do
       allow(Base64).to receive(:encode64).and_return("encrypted")
     end
 
-
     context "when inputs are valid" do
       it "is valid" do
         expect(outcome).to be_valid

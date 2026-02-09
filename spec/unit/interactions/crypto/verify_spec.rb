@@ -7,7 +7,7 @@ RSpec.describe Crypto::Verify, type: :interaction do
     subject(:outcome) { described_class.run(inputs) }
 
     let(:inputs) { { data: data, signature: signature, algorithm: algorithm } }
-    let(:data) { { "message" => "Hello World", "timestamp" => 1616161616 } }
+    let(:data) { { "message" => "Hello World", "timestamp" => 1_616_161_616 } }
     let(:signature) { "a7176bc594b111f173a34729c7ce0c431210498ed8f6bbc4eef3a5ca7a7b995d" }
     let(:algorithm) { :hmac }
 
@@ -31,27 +31,27 @@ RSpec.describe Crypto::Verify, type: :interaction do
       end
 
       it "returns valid: true" do
-        expect(outcome.result).to eq(true)
+        expect(outcome.result).to be(true)
       end
     end
 
     context "when signature is invalid" do
-       let(:signature) { "afzf7176bc594b111f173a34729c7ce0c431210498ed8f6bbc4eef3a5ca7a7b995d" }
+      let(:signature) { "afzf7176bc594b111f173a34729c7ce0c431210498ed8f6bbc4eef3a5ca7a7b995d" }
 
-       before do
-         allow_any_instance_of(Crypto::Hmac::Verify).to receive(:execute).and_return(false)
-       end
+      before do
+        allow_any_instance_of(Crypto::Hmac::Verify).to receive(:execute).and_return(false)
+      end
 
-       it "returns valid: false" do
-         expect(outcome).to be_invalid_with(:signature, :invalid)
-       end
+      it "returns valid: false" do
+        expect(outcome).to be_invalid_with(:signature, :invalid)
+      end
     end
 
     context "when data is missing" do
       let(:inputs) { { signature: signature } }
 
       it "is invalid" do
-        expect(outcome).to be_invalid
+        expect(outcome).not_to be_valid
         expect(outcome.errors[:data]).to include("is required")
       end
     end
@@ -60,7 +60,7 @@ RSpec.describe Crypto::Verify, type: :interaction do
       let(:inputs) { { data: data } }
 
       it "is invalid" do
-        expect(outcome).to be_invalid
+        expect(outcome).not_to be_valid
         expect(outcome.errors[:signature]).to include("is required")
       end
     end

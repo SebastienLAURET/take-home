@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
-require 'digest'
+require "rails_helper"
+require "digest"
 
 RSpec.describe Crypto::Hmac::Sign, type: :interaction do
   describe "#execute" do

@@ -26,7 +26,7 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
       let(:signature) { "InvalidSignature" }
 
       it "is invalid" do
-        expect(outcome).to be_invalid
+        expect(outcome).not_to be_valid
         expect(outcome.errors[:signature]).to include("is invalid")
       end
     end
@@ -35,7 +35,7 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
       let(:inputs) { { signature: signature } }
 
       it "is invalid" do
-        expect(outcome).to be_invalid
+        expect(outcome).not_to be_valid
         expect(outcome.errors[:data]).to include("is required")
       end
     end
@@ -44,7 +44,7 @@ RSpec.describe Crypto::Hmac::Verify, type: :interaction do
       let(:inputs) { { data: data } }
 
       it "is invalid" do
-        expect(outcome).to be_invalid
+        expect(outcome).not_to be_valid
         expect(outcome.errors[:signature]).to include("is required")
       end
     end
