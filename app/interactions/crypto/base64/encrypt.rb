@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class Crypto::Base64::Encrypt < ApplicationInteraction
-    hash :payload, strip: false, required: true
+  hash :payload, strip: false, required: true
 
-    def execute
-        encrypted_payload
-    end
+  def execute
+    encrypted_payload
+  end
 
-    private
+  private
 
-    def encrypted_payload
-        @encrypted_payload ||= payload.transform_values { |value| Base64.encode64(value.to_json) }
-    end
+  def encrypted_payload
+    @encrypted_payload ||= payload.transform_values { |value| Base64.encode64(value.to_json) }
+  end
 end

@@ -23,16 +23,16 @@ class Crypto::Hmac::Verify < ApplicationInteraction
 
   def signature_valid?
     ActiveSupport::SecurityUtils.secure_compare(
-      [ signature ].pack("H*"),
+      [signature].pack("H*"),
       calculated_signature
     )
   end
 
   def calculated_signature
-      OpenSSL::HMAC.digest(
-        "SHA256",
-        secret_key.unpack1("H*"),
-        data.to_json_c14n
-      )
+    OpenSSL::HMAC.digest(
+      "SHA256",
+      secret_key.unpack1("H*"),
+      data.to_json_c14n
+    )
   end
 end

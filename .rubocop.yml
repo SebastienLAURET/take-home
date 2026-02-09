@@ -1,5 +1,21 @@
-# Omakase Ruby styling for Rails
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-factory_bot
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'bin/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
 
 # Overwrite or add rules to create your own house style
 Style/StringLiterals:
@@ -13,6 +29,21 @@ Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always
 
+
+# Enforce 2-space indentation
+Layout/IndentationWidth:
+  Enabled: true
+  Width: 2
+
+Layout/IndentationStyle:
+  Enabled: true
+  EnforcedStyle: spaces
+
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: normal
+
+
 # Enforce compact style for classes/modules (use :: notation like Class::Name)
 # Exception: config/application.rb uses nested style
 Style/ClassAndModuleChildren:
@@ -21,6 +52,52 @@ Style/ClassAndModuleChildren:
   Exclude:
     - 'config/application.rb'
 
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+
+# Common overrides for Rails/RSpec projects
+
+# Often not needed for internal apps
+Style/Documentation:
+  Enabled: false
+
+# Tests and routes are often long
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/routes.rb'
+
+# Allow longer lines in specs
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'spec/**/*'
+
+# ActiveInteraction requires 'execute' method which might return boolean
+Naming/PredicateMethod:
+  Exclude:
+    - 'app/interactions/**/*'
+
+# RSpec configuration - make rules more practical
+
+# Allow multiple expectations per example
+RSpec/MultipleExpectations:
+  Max: 3
+
+# Allow longer examples
+RSpec/ExampleLength:
+  Max: 10
+
+# Allow traditional mocking style
+RSpec/MessageSpies:
+  Enabled: false
+
+# Allow stubbed mocks when needed
+RSpec/StubbedMock:
+  Enabled: false
+
+# Allow any_instance_of for now (can be refactored later)
+RSpec/AnyInstance:
+  Enabled: false
+
+# Allow explicit spec type tags (useful for non-standard paths like spec/integration/)
+RSpecRails/InferredSpecType:
+  Enabled: false

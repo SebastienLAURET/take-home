@@ -4,7 +4,7 @@ class Crypto::Verify < ApplicationInteraction
   # Reloading class to fix constant reference
   CRYPTO_VERIFY_ALGORITHMS = {
     hmac: Crypto::Hmac::Verify
-  }
+  }.freeze
 
   hash :data, strip: false, required: true
   string :signature, required: true
