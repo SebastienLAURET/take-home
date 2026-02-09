@@ -9,15 +9,28 @@ RSpec.describe Crypto::Hmac::Sign, type: :interaction do
 
     let(:inputs) { { payload: payload, secret_key: secret_key } }
     let(:payload) { { "username" => "john_doe", "password" => "secret123" } }
-    let(:secret_key) { "95eb51cbac2ee5e96b58d8dc79cde3bd6a5798c3a1673f7b2102679cfb12b023" }
+    let(:secret_key) { "secret_key" }
+    let(:signature) { double("Signature", unpack1: signature_hex) }
+    let(:signature_hex) { "Signaturehex" }
+    let(:secret_key_bytes) { "secret_key_bytes" }
+
+    before do
+      allow(OpenSSL::HMAC).to receive(:digest).and_return(signature)
+      allow_any_instance_of(Array).to receive(:pack).and_return(secret_key_bytes)
+    end
 
     context "when inputs are valid" do
       it "is valid" do
         expect(outcome).to be_valid
       end
 
+      it "calls OpenSSL::HMAC#digest" do
+        expect(OpenSSL::HMAC).to receive(:digest).with("SHA256", secret_key_bytes, payload.to_json_c14n)
+        outcome
+      end
+
       it "returns a hash with SHA256 Base64 encoded values" do
-        expect(outcome.result).to eq("29ca9635908c3a75f3bacaab48706c20c9eb8684882d3b87318279daedbf8216")
+        expect(outcome.result).to eq(signature_hex)
       end
     end
 

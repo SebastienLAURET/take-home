@@ -4,7 +4,7 @@ require "digest"
 
 class Crypto::Hmac::Sign < ApplicationInteraction
     hash :payload, strip: false, required: true
-    string :secret_key, default: ENV.fetch("HMAC_SECRET_KEY")
+    string :secret_key, default: -> { ENV.fetch("HMAC_SECRET_KEY") }
 
     def execute
         signature
@@ -15,7 +15,7 @@ class Crypto::Hmac::Sign < ApplicationInteraction
     def signature
        @signature ||= OpenSSL::HMAC.digest(
                 "SHA256",
-                secret_key.unpack1("H*"),
+                [ secret_key ].pack("H*"),
                 payload.to_json_c14n
             ).unpack1("H*")
     end

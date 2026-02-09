@@ -14,6 +14,7 @@ RSpec.describe Crypto::Verify, type: :interaction do
     context "when using hmac algorithm" do
       before do
         allow_any_instance_of(Crypto::Hmac::Verify).to receive(:execute).and_return(true)
+        allow_any_instance_of(Crypto::Hmac::Verify).to receive(:check_signature)
       end
 
       it "is valid" do
