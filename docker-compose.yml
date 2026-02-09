@@ -8,7 +8,6 @@ x-app-base: &app-base
     DATABASE_USERNAME: postgres
     DATABASE_PASSWORD: password
     BUNDLE_PATH: /usr/local/bundle
-    #PATH: /app/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     HMAC_SECRET_KEY: 1c860ae1936688e21df3c3cf8907fed2db158118f390a2a1d8714e9ff504f950
   volumes:
     - .:/app

@@ -18,9 +18,6 @@ fi
 rm -f /app/tmp/pids/server.pid
 
 # Exécuter la commande passée au container (par défaut ce qu'il y a dans CMD)
-if [ "$1" = "rspec" ]; then
-  export RAILS_ENV=test
-  exec bundle exec "$@"
-fi
+
 
 exec "$@"
