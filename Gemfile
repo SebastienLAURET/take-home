@@ -62,7 +62,7 @@ end
 
 
 gem "dotenv-rails"
-gem "grape", "~> 3.1"
+gem "grape", "~> 3.2"
 gem "grape-entity", "~> 1.0"
 gem "grape-swagger", "~> 2.1"
 gem "rack-cors"
